@@ -24,6 +24,7 @@ var brickOffsetTop = 30;
 var brickOffsetLeft = 30;
 
 var score = 0;
+var lives = 3;
 
 var bricks = [];
 for(c=0; c<brickColumnCount; c++) {
@@ -80,9 +81,18 @@ function draw() {
         dy = -dy;
     }
     else {
-        // alert("GAME OVER");
-        console.log("game over");
-        document.location.reload();
+        if (!lives) {
+          console.log("GAME OVER");
+          document.location.reload();
+        }
+        else {
+          x = canvas.width/2;
+          y = canvas.height-30;
+          dx = 2;
+          dy = -2;
+          paddleX = (canvas.width-paddleWidth)/2;
+          lives--;
+        }
     }
   }
 
@@ -98,9 +108,11 @@ function draw() {
   drawBall();
   drawPaddle();
   drawScore();
+  drawLives();
   collisionDetection();
   x += dx;
   y += dy;
+  requestAnimationFrame(draw);
 }
 
 document.addEventListener('keydown', keyDownHandler, false);
@@ -149,5 +161,19 @@ function drawScore() {
   ctx.fillText("Score: "+score, 8, 20);
 }
 
-//setInterval() loops indefinitely unless stopped
-setInterval(draw, 10);
+function drawLives() {
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "#0095DD";
+    ctx.fillText("Lives: "+lives, canvas.width-65, 20);
+}
+
+document.addEventListener("mousemove", mouseMoveHandler, false);
+
+function mouseMoveHandler(e) {
+    var relativeX = e.clientX - canvas.offsetLeft;
+    if(relativeX > 0 && relativeX < canvas.width) {
+        paddleX = relativeX - paddleWidth/2;
+    }
+}
+
+draw();
